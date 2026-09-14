@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osobisty coach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <a href="/">Codzienna ankieta</a> |
+            <a href="/podsumowanie-tygodnia">Podsumowanie tygodnia</a> |
+            {% if session.get("nazwa_uzytkownika") %}
+                <a href="/wyloguj">Wyloguj</a>
+            {% else %}
+                <button type="submit" class="link-nav" form="formularz-ankiety"
+                    formaction="/przed-logowaniem" formmethod="post">Logowanie</button>
+            {% endif %}
+        </nav>
+        <h1>Codzienna ankieta</h1>
+
+        <div class="nawigacja-dnia">
+            {% if data_wstecz %}
+            <button type="submit" class="strzalka" form="formularz-ankiety"
+                formaction="/zmien-dzien" formmethod="post"
+                name="nowa_data" value="{{ data_wstecz }}"
+                aria-label="Poprzedni dzień">‹</button>
+            {% else %}
+            <button type="button" class="strzalka" disabled aria-label="Poprzedni dzień">‹</button>
+            {% endif %}
+            <h2>{{ etykieta_dnia }}</h2>
+            {% if data_naprzod %}
+            <button type="submit" class="strzalka" form="formularz-ankiety"
+                formaction="/zmien-dzien" formmethod="post"
+                name="nowa_data" value="{{ data_naprzod }}"
+                aria-label="Następny dzień">›</button>
+            {% else %}
+            <button type="button" class="strzalka" disabled aria-label="Następny dzień">›</button>
+            {% endif %}
+        </div>
+
+        <form id="formularz-ankiety" class="{% if juz_wyslano %}ankieta-zablokowana{% endif %}"
+              action="/ankieta" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="data" value="{{ data_iso }}">
+
+            <p class="podpowiedz">Oceń każdy obszar od 1 do 5 gwiazdek, gdzie 5 to najlepsza ocena.</p>
+            {% if juz_wyslano %}
+            <p class="podpowiedz">Ankieta za ten dzień została już wysłana — ponowne przesłanie nie jest dostępne.</p>
+            {% endif %}
+
+            <div class="oceny">
+                {% for pole, etykieta in obszary %}
+                <div class="ocena">
+                    <span class="ocena-nazwa" id="etykieta-{{ pole }}">{{ etykieta }}</span>
+                    <div class="gwiazdki" role="radiogroup" aria-labelledby="etykieta-{{ pole }}">
+                        {% for n in range(5, 0, -1) %}
+                        <input type="radio" name="{{ pole }}" id="{{ pole }}-{{ n }}" value="{{ n }}"
+                            {% if oceny.get(pole)|string == n|string %}checked{% endif %}
+                            {% if juz_wyslano %}disabled{% endif %}>
+                        <label for="{{ pole }}-{{ n }}" title="{{ n }}">
+                            <span class="sr-only">{{ n }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <label class="sr-only" for="refleksje">Własne refleksje</label>
+            <textarea name="refleksje" id="refleksje" rows="5" maxlength="3000"
+                placeholder="Własne refleksje dotyczące tego dnia..."
+                {% if juz_wyslano %}readonly{% endif %}>{{ refleksje }}</textarea>
+
+            {% if not juz_wyslano %}
+            <label class="obszar-pliku">
+                <strong>Wgraj plik tekstowy (.txt), opcjonalnie</strong>
+                <input type="file" name="plik" id="plik" accept=".txt,text/plain">
+                {% if nazwa_pliku %}
+                <span class="nazwa-pliku">Zapisany plik: {{ nazwa_pliku }} (zostanie użyty, jeśli nie wybierzesz innego)</span>
+                {% endif %}
+            </label>
+            {% endif %}
+
+            <button type="submit" class="przycisk-wyslij" {% if juz_wyslano %}disabled{% endif %}>Wyślij</button>
+
+            {% if blad %}
+            <p class="answer-box">{{ blad }}</p>
+            {% endif %}
+
+            {% if podsumowanie %}
+            <div class="answer-box podsumowanie-dnia">{{ podsumowanie }}</div>
+            {% endif %}
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejestracja</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="container">
+    <h1>Rejestracja</h1>
+    {% if ma_szkic %}
+    <p class="podpowiedz">Po rejestracji Twoja wypełniona ankieta zostanie zachowana i — jeśli była kompletna — wysłana.</p>
+    {% endif %}
+    {% if ma_podsumowanie %}
+    <p class="podpowiedz">Po rejestracji wygenerujemy podsumowanie tygodnia.</p>
+    {% endif %}
+    <form action="/rejestracja" method="POST">
+    <input type="text" class="textinput" name="nazwa_uzytkownika" placeholder="Nazwa użytkownika" required>
+    <input type="password" class="textinput" name="haslo" placeholder="Hasło" required>
+    <button type="submit" class="przycisk-wyslij">Zarejestruj się</button>
+    </form>
+    {% if blad %}<p class="answer-box">{{ blad }}</p>{% endif %}
+    <p style="font-size: 14px; color: #666;">
+        Rejestrując się, akceptujesz, że treść Twoich ankiet i przesyłanych plików
+        będzie przetwarzana przez zewnętrzny model AI (Claude, firmy Anthropic)
+        w celu wygenerowania odpowiedzi.
+    </p>
+    <p><a href="/">Wróć do strony głównej</a></p>
+</main>
+</body>
+</html>
