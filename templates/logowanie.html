@@ -9,12 +9,6 @@
 <body>
 <main class="container">
     <h1>Logowanie</h1>
-    {% if ma_szkic %}
-    <p class="podpowiedz">Po zalogowaniu Twoja wypełniona ankieta zostanie zachowana i — jeśli była kompletna — wysłana.</p>
-    {% endif %}
-    {% if ma_podsumowanie %}
-    <p class="podpowiedz">Po zalogowaniu wygenerujemy podsumowanie tygodnia.</p>
-    {% endif %}
     <form action="/logowanie" method="POST">
     <input type="text" class="textinput" name="nazwa_uzytkownika" placeholder="Nazwa użytkownika" required>
     <input type="password" class="textinput" name="haslo" placeholder="Hasło" required>

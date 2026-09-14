@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osobisty coach</title>
+    <title>Dziennik dobrostanu</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -45,9 +45,6 @@
             <input type="hidden" name="data" value="{{ data_iso }}">
 
             <p class="podpowiedz">Oceń każdy obszar od 1 do 5 gwiazdek, gdzie 5 to najlepsza ocena.</p>
-            {% if juz_wyslano %}
-            <p class="podpowiedz">Ankieta za ten dzień została już wysłana — ponowne przesłanie nie jest dostępne.</p>
-            {% endif %}
 
             <div class="oceny">
                 {% for pole, etykieta in obszary %}
@@ -82,7 +79,11 @@
             </label>
             {% endif %}
 
-            <button type="submit" class="przycisk-wyslij" {% if juz_wyslano %}disabled{% endif %}>Wyślij</button>
+            <button type="submit" class="przycisk-wyslij" {% if juz_wyslano %}disabled{% endif %}>Wyślij ankietę, aby ją zapisać i uzyskać porady od AI</button>
+
+            {% if juz_wyslano %}
+            <p class="podpowiedz">Ankieta za ten dzień została już wysłana - ponowne przesłanie nie jest dostępne.</p>
+            {% endif %}
 
             {% if blad %}
             <p class="answer-box">{{ blad }}</p>

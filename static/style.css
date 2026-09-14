@@ -5,7 +5,6 @@
     --main-color: #423a60;
     --text-color: darkolivegreen;
     --bg-color: #e1e5da;
-    --border-color: #423a60;
     --star-empty: #c5cbbd;
     --star-filled: #c9a227;
 }
@@ -63,7 +62,7 @@ button {
     font-family: inherit;
     color: var(--main-color);
     background-color: white;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--main-color);
     border-radius: 8px;
     padding: 6px;
     margin: 5px auto;
@@ -86,7 +85,7 @@ textarea {
     font-size: 16px;
     font-family: inherit;
     color: var(--main-color);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--main-color);
     border-radius: 8px;
     resize: vertical;
 }
@@ -100,7 +99,7 @@ textarea::placeholder {
     margin: 5px auto;
     padding: 8px;
     font-size: 16px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--main-color);
     border-radius: 8px;
     font-family: inherit;
 }
@@ -151,6 +150,7 @@ textarea::placeholder {
 }
 
 .podpowiedz {
+    text-align: center;
     margin: 0 0 12px;
     font-size: 0.95rem;
     color: var(--text-color);
@@ -227,7 +227,7 @@ textarea::placeholder {
     min-height: 96px;
     margin: 8px 0 20px;
     padding: 16px;
-    border: 1px dashed var(--border-color);
+    border: 1px dashed var(--main-color);
     border-radius: 8px;
     text-align: center;
     background-color: #f7f8f4;
@@ -247,9 +247,29 @@ textarea::placeholder {
     width: 100%;
     margin: 0;
     padding: 12px;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: var(--main-color);
+    background-color: white;
+    border: 1px solid var(--main-color);
+    border-radius: 8px;
+}
+
+a.przycisk-wyslij:hover {
+    background-color: var(--bg-color);
+}
+
+.podsumowanie-gotowe {
+    margin-top: 16px;
+}
+
+.podsumowanie-gotowe .podpowiedz {
+    margin-bottom: 12px;
+    text-align: center;
 }
 
 .answer-box {

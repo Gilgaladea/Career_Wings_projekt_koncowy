@@ -272,12 +272,12 @@ def odczytaj_plik_tekstowy(plik):
         tresc = surowa_tresc.decode("utf-8")
     except UnicodeDecodeError:
         tresc = surowa_tresc.decode("utf-8", errors="replace")
-    tresc = oczysc_tekst(tresc).strip()
-    if tresc == "":
+    tresc = oczysc_tekst(tresc)
+    if tresc.strip() == "":
         return None, None, "Plik tekstowy jest pusty."
     if len(tresc) > MAX_DLUGOSC_TEKSTU:
         return None, None, "Plik tekstowy jest za długi."
-    if len(tresc) < MIN_DLUGOSC_TEKSTU:
+    if len(tresc.strip()) < MIN_DLUGOSC_TEKSTU:
         return None, None, "Plik tekstowy jest za krótki."
     return tresc, plik.filename, None
 
@@ -302,24 +302,24 @@ def zbierz_szkic_z_formularza():
 
 
 def zapytaj_claude(tresc_pytania, system_prompt=None):
+    if not os.environ.get("ANTHROPIC_API_KEY", "").strip():
+        return "BŁĄD: brak ANTHROPIC_API_KEY."
     try:
-        parametry = {
-            "model": MODEL,
-            "max_tokens": MAX_TOKENS,
-            "messages": [{"role": "user", "content": tresc_pytania}],
-        }
-        if system_prompt:
-            parametry["system"] = system_prompt
-        odpowiedz = client.messages.create(**parametry)
-        return odpowiedz.content[0].text
+        wiadomosc = client.messages.create(
+            model=MODEL,
+            max_tokens=MAX_TOKENS,
+            system=system_prompt or SYSTEM_PROMPT_COACH,
+            messages=[{"role": "user", "content": tresc_pytania}],
+        )
+        return wiadomosc.content[0].text
     except AuthenticationError:
         return "BŁĄD: nieprawidłowy klucz API."
     except RateLimitError:
         return "BŁĄD: zbyt wiele zapytań. Spróbuj za chwilę."
     except APIConnectionError:
-        return "BŁĄD: problem z połączeniem internetowym."
-    except APIError as blad:
-        return f"BŁĄD: {blad}"
+        return "BŁĄD: problem z połączeniem."
+    except APIError:
+        return "BŁĄD: problem z API."
 
 
 def zbuduj_prompt_dnia(szkic):
@@ -344,24 +344,14 @@ Treść pliku jest między znacznikami:
 <plik>
 {szkic['tresc_pliku']}
 </plik>
-Uwzględnij plik w analizie dnia. Na samym końcu odpowiedzi dodaj osobną linię:
-NOTATKA_PLIKU: (2-3 zdania o tym, co wynika z pliku)
+Uwzględnij plik w analizie dnia.
 """
     else:
-        prompt += "\nNie dołączono pliku. Nie dodawaj linii NOTATKA_PLIKU.\n"
+        prompt += "\nNie dołączono pliku.\n"
     prompt += (
         "\nNapisz analizę dnia: pochwała, motywacja i konkretne wskazówki do poprawy."
     )
     return prompt
-
-
-def wyodrebnij_notatke_pliku(tekst):
-    znacznik = "NOTATKA_PLIKU:"
-    if znacznik not in tekst:
-        return tekst.strip(), None
-    analiza, _, notatka = tekst.partition(znacznik)
-    notatka = notatka.strip() or None
-    return analiza.strip(), notatka
 
 
 def formatuj_srednia(wartosc):
@@ -403,7 +393,8 @@ def zbuduj_prompt_tygodnia(wpisy, srednie):
             f"{etykieta}: {wpis['oceny'][pole]}/5" for pole, etykieta in OBSZARY
         ]
         refleksje = wpis.get("refleksje") or "Brak"
-        notatka = wpis.get("notatka_pliku") or "Brak"
+        tresc_pliku = wpis.get("tresc_pliku") or "Brak"
+        nazwa_zalacznika = wpis.get("nazwa_pliku") or "brak"
         bloki_dni.append(
             f"""{etykieta_dnia(dzien)}
 Oceny: {', '.join(linie_ocen)}
@@ -411,7 +402,10 @@ Refleksje:
 <refleksje>
 {refleksje}
 </refleksje>
-Notatka o pliku: {notatka}"""
+Załączony plik ({nazwa_zalacznika}):
+<plik>
+{tresc_pliku}
+</plik>"""
         )
     return f"""Podsumuj okres na podstawie {len(wpisy)} ankiet z ostatnich 7 dni.
 
@@ -451,7 +445,7 @@ def utworz_podsumowanie():
             blad="Potrzebujesz co najmniej 2 ankiet z ostatnich 7 dni."
         )
     tekst_do_skanu = "\n".join(
-        (wpis.get("refleksje") or "") + "\n" + (wpis.get("notatka_pliku") or "")
+        (wpis.get("refleksje") or "") + "\n" + (wpis.get("tresc_pliku") or "")
         for _dzien, wpis in wpisy
     )
     if wyglada_na_probe_injection(tekst_do_skanu):
@@ -587,15 +581,12 @@ def przetworz_ankiete(szkic):
             blad=odpowiedz,
         )
 
-    analiza, notatka_pliku = wyodrebnij_notatke_pliku(odpowiedz)
-    if not szkic.get("tresc_pliku"):
-        notatka_pliku = None
-
     dane[dzien_iso] = {
         "oceny": {pole: int(szkic["oceny"][pole]) for pole in POLA_OCEN},
         "refleksje": szkic.get("refleksje", ""),
-        "notatka_pliku": notatka_pliku,
-        "podsumowanie_ai": analiza,
+        "nazwa_pliku": szkic.get("nazwa_pliku"),
+        "tresc_pliku": szkic.get("tresc_pliku"),
+        "podsumowanie_ai": odpowiedz.strip(),
     }
     zapisz_ankiety_uzytkownika(nazwa, dane)
     usun_szkic_dnia(dzien_iso)
@@ -604,7 +595,7 @@ def przetworz_ankiete(szkic):
         wybrany_dzien,
         oceny=szkic.get("oceny", {}),
         refleksje=szkic.get("refleksje", ""),
-        podsumowanie=analiza,
+        podsumowanie=odpowiedz.strip(),
         juz_wyslano=True,
     )
 

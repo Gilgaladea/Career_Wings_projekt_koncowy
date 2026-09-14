@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osobisty coach</title>
+    <title>Dziennik dobrostanu</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -19,19 +19,19 @@
         </nav>
         <h1>Podsumowanie tygodnia</h1>
         <h2>Wygeneruj podsumowanie z ostatnich 7 dni</h2>
-        <p class="podpowiedz">Potrzebne są co najmniej 2 ankiety z ostatnich 7 dni (maksymalnie 7).</p>
+        <p class="podpowiedz">Potrzebne są co najmniej 2 ankiety z ostatnich 7 dni.</p>
         <form action="/generuj-podsumowanie" method="POST">
             <button type="submit" class="przycisk-wyslij">Generuj</button>
             {% if blad %}
             <p class="answer-box">{{ blad }}</p>
             {% endif %}
-            {% if link_pobierania %}
-            <p class="answer-box">
-                Podsumowanie jest gotowe.
-                <a href="{{ link_pobierania }}">Pobierz plik</a>
-            </p>
-            {% endif %}
         </form>
+        {% if link_pobierania %}
+        <div class="podsumowanie-gotowe">
+            <p class="podpowiedz">Podsumowanie jest gotowe.</p>
+            <a href="{{ link_pobierania }}" class="przycisk-wyslij">Pobierz plik</a>
+        </div>
+        {% endif %}
     </main>
 </body>
 </html>
