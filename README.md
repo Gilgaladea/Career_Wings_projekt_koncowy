@@ -8,7 +8,7 @@ generowane przez Claude (Anthropic).
 - Ocena 5 obszarów (dieta, aktywność fizyczna, sen, zarządzanie stresem, satysfakcja)
 - Refleksje i opcjonalny plik tekstowy (`.txt`), zapisywany w JSON
 - Nawigacja po dniach (dziś i 14 dni wstecz)
-- Użytkownik może tylko raz wypełnić codzienną ankietę na dany dzień
+- Możliwość jednorazowego wypełniania ankiety na każdy dzień przez jednego użytkownika
 - Możliwość wypełnienia ankiety przed logowaniem (szkic, dokończenie po zalogowaniu)
 - Podsumowanie tygodnia na podstawie 2–7 ankiet z ostatnich 7 dni (plik HTML do pobrania)
 - Konta z hasłami hashowanymi (bcrypt)
