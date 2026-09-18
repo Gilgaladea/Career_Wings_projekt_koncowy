@@ -284,6 +284,22 @@ a.przycisk-wyslij:hover {
     margin-top: 16px;
 }
 
+.strona-powitalna p {
+    line-height: 1.5;
+    text-align: center;
+}
+
+.strona-powitalna .podpowiedz {
+    text-align: center;
+}
+
+.akcje-powitalne {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 28px 0 16px;
+}
+
 @media (max-width: 520px) {
     .ocena {
         flex-direction: column;

@@ -608,12 +608,20 @@ def dokoncz_po_zalogowaniu():
             return przetworz_ankiete(szkic)
     if session.pop("generuj_podsumowanie", None):
         return utworz_podsumowanie()
-    return redirect(url_for("strona_glowna"))
+    return redirect(url_for("strona_ankiety"))
 
 
 @app.route("/")
 @limiter.exempt
 def strona_glowna():
+    if "nazwa_uzytkownika" in session:
+        return redirect(url_for("strona_ankiety"))
+    return render_template("powitanie.html")
+
+
+@app.route("/ankieta")
+@limiter.exempt
+def strona_ankiety():
     wybrany_dzien = parsuj_date(request.args.get("data")) or dzisiaj()
     return render_ankieta(wybrany_dzien)
 
@@ -628,7 +636,7 @@ def zmien_dzien():
     juz_jest = nazwa and wpis_dnia(nazwa, szkic.get("data", ""))
     if szkic_ma_tresc(szkic) and not juz_jest:
         zapisz_szkic_dnia(szkic)
-    return redirect(url_for("strona_glowna", data=(nowy_dzien or wybrany_dzien).isoformat()))
+    return redirect(url_for("strona_ankiety", data=(nowy_dzien or wybrany_dzien).isoformat()))
 
 
 @app.route("/przed-logowaniem", methods=["POST"])
@@ -695,7 +703,7 @@ def logowanie():
     flagi = flagi_po_wyslaniu_formularza()
     if request.method == "GET":
         if "nazwa_uzytkownika" in session:
-            return redirect(url_for("strona_glowna"))
+            return redirect(url_for("strona_ankiety"))
         return render_template("logowanie.html", **flagi)
     nazwa_uzytkownika = request.form.get("nazwa_uzytkownika", "").strip()
     haslo = request.form.get("haslo", "")
@@ -712,7 +720,7 @@ def logowanie():
 @app.route("/wyloguj")
 def wyloguj():
     session.pop("nazwa_uzytkownika", None)
-    return redirect(url_for("logowanie"))
+    return redirect(url_for("strona_glowna"))
 
 
 @app.route("/podsumowanie-tygodnia")

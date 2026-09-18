@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dziennik dobrostanu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container strona-powitalna">
+        <h1>Dziennik dobrostanu</h1>
+        <p class="podpowiedz">
+            Codzienna ankieta i tygodniowe podsumowanie od osobistego coacha AI.
+        </p>
+        <p>
+            Oceń każdy swój dzień pod względem kluczowych aspektów zdrowego stylu życia: 
+            diety, aktywności fizycznej, snu, stresu i ogólnego poziomu satysfakcji. 
+            Po wysłaniu codziennej ankiety dostaniesz krótkie podsumowanie ze wskazówkami. 
+            Z kilku dni możesz wygenerować raport tygodnia.
+        </p>
+        <div class="akcje-powitalne">
+            <a href="/logowanie" class="przycisk-wyslij">Zaloguj się</a>
+            <a href="/rejestracja" class="przycisk-wyslij">Zarejestruj się</a>
+        </div>
+    </main>
+</body>
+</html>
