@@ -3,7 +3,5 @@
 venv/
 __pycache__/
 .idea
-static/dane_ankiet/
-static/szkice/
-static/podsumowania/
+data/
 users.json

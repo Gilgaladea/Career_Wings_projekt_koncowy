@@ -81,7 +81,8 @@ python app.py
 ```
 app.py              główny plik aplikacji (trasy, logika)
 templates/          szablony HTML (Jinja2)
-static/             CSS; foldery danych powstają w runtime
+static/             CSS
+data/               ankiety, szkice i raporty (powstają w runtime)
 requirements.txt    lista zależności Pythona
 ```
 
